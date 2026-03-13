@@ -1,0 +1,293 @@
+/* Modern Sleek Dark Mode Eco-Themed CSS */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+html,
+body,
+[class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+/*:root {
+    --primary: #10b981;
+    --primary-dark: #065f46;
+    --primary-light: #d1fae5;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+}
+
+.stApp {
+    background-color: var(--bg);
+}
+
+.main .block-container {
+    padding-top: 2rem;
+    max-width: 1200px;
+}
+
+/* Rounded Cards */
+div.stMetric,
+div[data-testid="metric-container"] {
+    background: var(--card-bg);
+    border: 1px solid #e2e8f0;
+    padding: 1.5rem !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    transition: transform 0.2s ease;
+}
+
+div.stMetric:hover {
+    transform: translateY(-4px);
+}
+
+/* Alert Boxes */
+.danger-alert,
+.warning-alert,
+.success-alert {
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    border-left: 5px solid;
+}
+
+.danger-alert {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-color: #ef4444;
+}
+
+.warning-alert {
+    background-color: #fef3c7;
+    color: #92400e;
+    border-color: #f59e0b;
+}
+
+.success-alert {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-color: #10b981;
+}
+
+/* Sidebar Styling */
+section[data-testid="stSidebar"] {
+    background-color: var(--primary-dark);
+}
+
+section[data-testid="stSidebar"] .stMarkdown h2,
+section[data-testid="stSidebar"] .stMarkdown h1,
+section[data-testid="stSidebar"] label {
+    color: #ffffff !important;
+}
+
+/* Headers */
+h1,
+h2,
+h3 {
+    color: #10b981 !important;
+    font-weight: 700 !important;
+}
+
+/* Buttons */
+.stButton>button {
+    width: 100%;
+    border-radius: 10px;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.stButton>button:hover {
+    background-color: #059669;
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+}
+
+/* Input fields and select boxes */
+.stTextInput>div>div>input,
+.stSelectbox>div>div>div,
+.stNumberInput>div>div>input {
+    border-radius: 8px;
+    border: 1px solid #475569;
+    background-color: #1e293b;
+    color: #f8fafc;
+}
+
+.stTextInput>div>div>input:focus,
+.stSelectbox>div>div>div:focus,
+.stNumberInput>div>div>input:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+/* Score Animation Container */
+.score-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: conic-gradient(var(--primary) var(--percentage), #e2e8f0 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    animation: rotateScale 1.5s ease-out;
+}
+
+.score-circle::after {
+    content: attr(data-score);
+    width: 120px;
+    height: 120px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+}
+
+@keyframes rotateScale {
+    0% {
+        transform: scale(0.5) rotate(-180deg);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+/* Dashboard Card Styles */
+.kpi-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    transition: all 0.3s ease;
+    border-top: 4px solid var(--primary);
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+}
+
+.kpi-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+    background: linear-gradient(45deg, #10b981, #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.kpi-label {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Custom Progress Bar for Leaderboard */
+.score-progress-container {
+    width: 100%;
+    background-color: #334155;
+    border-radius: 5px;
+    height: 12px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.score-progress-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 1s ease-in-out;
+}
+
+.bg-high { background-color: #10b981; }
+.bg-medium { background-color: #f59e0b; }
+.bg-low { background-color: #ef4444; }
+
+/* Leaderboard Medal Highlighting */
+.rank-medal {
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+.row-rank-1 { background-color: rgba(255, 215, 0, 0.05) !important; }
+.row-rank-2 { background-color: rgba(192, 192, 192, 0.05) !important; }
+.row-rank-3 { background-color: rgba(205, 127, 50, 0.05) !important; }
+
+/* Smooth animations for cards */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Sidebar Branding Enhancements */
+.sidebar-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 12px;
+}
+
+/* Responsive Table Adjustments */
+[data-testid="stDataFrame"] {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #334155;
+}
+
+div[data-testid="stMetricValue"] {
+    color: #f8fafc !important;
+    background-color: rgba(16, 185, 129, 0.1);
+    border-left: 4px solid #10b981;
+    padding: 1rem;
+    border-radius: 4px;
+    color: #34d399;
+    margin-bottom: 1rem;
+}
+
+.warning-alert {
+    background-color: rgba(234, 179, 8, 0.1);
+    border-left: 4px solid #eab308;
+    padding: 1rem;
+    border-radius: 4px;
+    color: #fde047;
+    margin-bottom: 1rem;
+}
+
+.danger-alert {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-left: 4px solid #ef4444;
+    padding: 1rem;
+    border-radius: 4px;
+    color: #fca5a5;
+    margin-bottom: 1rem;
+}
