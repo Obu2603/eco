@@ -1,5 +1,6 @@
 import os
 from pymongo import MongoClient
+import streamlit as st
 
 # Use local MongoDB by default
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
@@ -36,6 +37,7 @@ def save_evaluated_project(project_data):
         
     collection.insert_one(project_data)
 
+@st.cache_data(ttl=300)
 def get_similar_projects(project_type, location, limit=5):
     """Fetches similar projects from MongoDB based on type and location."""
     try:
@@ -43,12 +45,13 @@ def get_similar_projects(project_type, location, limit=5):
         query = {"Project Type": project_type, "Project Location": location}
         
         # Sort by TOPSIS Score descending to get the best similar projects
-        cursor = collection.find(query).sort("TOPSIS Score", -1).limit(limit)
+        cursor = collection.find(query, {"_id": 0}).sort("TOPSIS Score", -1).limit(limit)
         return list(cursor)
     except Exception as e:
         print(f"Database connection error: {e}")
         return []
 
+@st.cache_data(ttl=300)
 def get_top_projects(limit=10, search_query=None, project_type=None, classification=None):
     """Fetches projects with advanced filtering and search."""
     try:
@@ -67,12 +70,13 @@ def get_top_projects(limit=10, search_query=None, project_type=None, classificat
         if classification and classification != "All":
             query["Classification"] = classification
 
-        cursor = collection.find(query).sort("TOPSIS Score", -1).limit(limit)
+        cursor = collection.find(query, {"_id": 0}).sort("TOPSIS Score", -1).limit(limit)
         return list(cursor)
     except Exception as e:
         print(f"Database connection error: {e}")
         return []
 
+@st.cache_data(ttl=600)
 def get_sustainability_stats():
     """Returns counts of projects by classification and total."""
     try:
@@ -92,6 +96,7 @@ def get_sustainability_stats():
         print(f"Database connection error: {e}")
         return {"total": 0, "high": 0, "medium": 0, "low": 0}
 
+@st.cache_data(ttl=3600)
 def get_metadata():
     """Returns unique project types and locations for filters."""
     try:
@@ -102,6 +107,7 @@ def get_metadata():
         print(f"Database connection error: {e}")
         return {"types": ["Residential", "Commercial", "Industrial", "Institutional", "Mixed-Use"]}
 
+@st.cache_data(ttl=60)
 def count_projects():
     """Returns the total number of projects in the database."""
     try:
