@@ -2,8 +2,11 @@ import os
 from pymongo import MongoClient
 import streamlit as st
 
-# Use local MongoDB by default
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+# Use Streamlit secrets for deployment, fallback to environment variable or local MongoDB
+if "MONGO_URI" in st.secrets:
+    MONGO_URI = st.secrets["MONGO_URI"]
+else:
+    MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 DB_NAME = "eco_build_ai"
 COLLECTION_NAME = "projects"
 
