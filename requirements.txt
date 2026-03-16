@@ -2,6 +2,7 @@ streamlit
 pandas
 numpy
 pymongo
+dnspython
 plotly
 scikit-learn
 fpdf2

@@ -12,7 +12,8 @@ COLLECTION_NAME = "projects"
 
 def get_database():
     """Returns the MongoDB database instance."""
-    client = MongoClient(MONGO_URI)
+    # Add a 5-second timeout to prevent the UI from hanging on deployment
+    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
     return client[DB_NAME]
 
 def get_collection():
