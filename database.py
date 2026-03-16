@@ -38,54 +38,74 @@ def save_evaluated_project(project_data):
 
 def get_similar_projects(project_type, location, limit=5):
     """Fetches similar projects from MongoDB based on type and location."""
-    collection = get_collection()
-    query = {"Project Type": project_type, "Project Location": location}
-    
-    # Sort by TOPSIS Score descending to get the best similar projects
-    cursor = collection.find(query).sort("TOPSIS Score", -1).limit(limit)
-    return list(cursor)
+    try:
+        collection = get_collection()
+        query = {"Project Type": project_type, "Project Location": location}
+        
+        # Sort by TOPSIS Score descending to get the best similar projects
+        cursor = collection.find(query).sort("TOPSIS Score", -1).limit(limit)
+        return list(cursor)
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        return []
 
 def get_top_projects(limit=10, search_query=None, project_type=None, classification=None):
     """Fetches projects with advanced filtering and search."""
-    collection = get_collection()
-    query = {"TOPSIS Score": {"$exists": True}}
-    
-    if search_query:
-        query["$or"] = [
-            {"Project Location": {"$regex": search_query, "$options": "i"}},
-            {"Project Type": {"$regex": search_query, "$options": "i"}}
-        ]
-    
-    if project_type and project_type != "All":
-        query["Project Type"] = project_type
+    try:
+        collection = get_collection()
+        query = {"TOPSIS Score": {"$exists": True}}
         
-    if classification and classification != "All":
-        query["Classification"] = classification
+        if search_query:
+            query["$or"] = [
+                {"Project Location": {"$regex": search_query, "$options": "i"}},
+                {"Project Type": {"$regex": search_query, "$options": "i"}}
+            ]
+        
+        if project_type and project_type != "All":
+            query["Project Type"] = project_type
+            
+        if classification and classification != "All":
+            query["Classification"] = classification
 
-    cursor = collection.find(query).sort("TOPSIS Score", -1).limit(limit)
-    return list(cursor)
+        cursor = collection.find(query).sort("TOPSIS Score", -1).limit(limit)
+        return list(cursor)
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        return []
 
 def get_sustainability_stats():
     """Returns counts of projects by classification and total."""
-    collection = get_collection()
-    total = collection.count_documents({"TOPSIS Score": {"$exists": True}})
-    high = collection.count_documents({"Classification": "High"})
-    medium = collection.count_documents({"Classification": "Medium"})
-    low = collection.count_documents({"Classification": "Low"})
-    
-    return {
-        "total": total,
-        "high": high,
-        "medium": medium,
-        "low": low
-    }
+    try:
+        collection = get_collection()
+        total = collection.count_documents({"TOPSIS Score": {"$exists": True}})
+        high = collection.count_documents({"Classification": "High"})
+        medium = collection.count_documents({"Classification": "Medium"})
+        low = collection.count_documents({"Classification": "Low"})
+        
+        return {
+            "total": total,
+            "high": high,
+            "medium": medium,
+            "low": low
+        }
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        return {"total": 0, "high": 0, "medium": 0, "low": 0}
 
 def get_metadata():
     """Returns unique project types and locations for filters."""
-    collection = get_collection()
-    types = collection.distinct("Project Type")
-    return {"types": types}
+    try:
+        collection = get_collection()
+        types = collection.distinct("Project Type")
+        return {"types": types}
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        return {"types": ["Residential", "Commercial", "Industrial", "Institutional", "Mixed-Use"]}
 
 def count_projects():
     """Returns the total number of projects in the database."""
-    return get_collection().count_documents({})
+    try:
+        return get_collection().count_documents({})
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        return 0
