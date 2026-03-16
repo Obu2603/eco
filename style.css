@@ -24,6 +24,23 @@ body,
     background-color: var(--bg);
 }
 
+/* Hide Streamlit Header, Toolbar, and Footer */
+header[data-testid="stHeader"] {
+    display: none !important;
+}
+
+.stDeployButton {
+    display: none !important;
+}
+
+[data-testid="stToolbar"] {
+    display: none !important;
+}
+
+footer {
+    display: none !important;
+}
+
 .main .block-container {
     padding-top: 2rem;
     max-width: 1200px;
