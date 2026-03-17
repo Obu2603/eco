@@ -1,6 +1,7 @@
 import os
 from pymongo import MongoClient
 import streamlit as st
+import random
 
 # --- Database Configuration ---
 DB_NAME = "eco_build_ai"
@@ -20,7 +21,6 @@ def load_mongo_uri():
     if env_uri:
         return env_uri
         
-    # Local fallback only if not explicitly on Cloud
     is_cloud = os.getenv("STREAMLIT_SERVER_GATHER_USAGE_STATS") == "true" or os.getenv("STREAMLIT_SHARING_MODE") == "on"
     if not is_cloud:
         return "mongodb://localhost:27017/"
@@ -37,7 +37,6 @@ def get_database():
         return None
     
     try:
-        # Short timeout to detect if DB is actually reachable
         client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=2000)
         client.admin.command('ping') 
         DB_AVAILABLE = True
@@ -51,115 +50,115 @@ def get_collection():
     db = get_database()
     return db[COLLECTION_NAME] if db is not None else None
 
-# Check connectivity once at startup
+# Initial check
 get_database()
 
-# UI Feedback for connection status
+# --- Mock Data for Demo Mode ---
+def get_mock_projects(limit=50):
+    """Generates a list of mock projects for Demo Mode."""
+    projects = []
+    locations = ["Chennai", "Bengaluru", "Hyderabad", "Mumbai", "Delhi", "Pune", "Kolkata", "Ahmedabad"]
+    types = ["Residential", "Commercial", "Industrial", "Institutional", "Mixed-Use"]
+    
+    for i in range(limit):
+        score = random.uniform(0.3, 0.95)
+        classification = "High" if score >= 0.75 else "Medium" if score >= 0.45 else "Low"
+        projects.append({
+            "Project Location": random.choice(locations),
+            "Project Type": random.choice(types),
+            "TOPSIS Score": score,
+            "Classification": classification,
+            "Embodied Emissions (Tons)": random.randint(500, 3000),
+            "Operational Emissions (Tons/yr)": random.randint(100, 800),
+            "Material Reuse (%)": random.randint(10, 80),
+            "Renewable Energy (%)": random.randint(5, 95),
+            "Waste Minimization (%)": random.randint(30, 90)
+        })
+    return sorted(projects, key=lambda x: x["TOPSIS Score"], reverse=True)
+
+# UI Feedback
 if not DB_AVAILABLE:
     is_cloud = os.getenv("STREAMLIT_SERVER_GATHER_USAGE_STATS") == "true" or os.getenv("STREAMLIT_SHARING_MODE") == "on"
     if is_cloud:
-        st.info("ℹ️ **Offline Mode**: Running without database connection. Global analytics are disabled.")
+        st.info("💡 **Demo Mode**: Database not connected. Displaying sample data for preview.")
 
 # --- Data Functions ---
 
 def insert_projects(projects):
-    """Inserts a list of project dictionaries into the collection."""
     collection = get_collection()
     if collection is not None and projects:
-        try:
-            collection.insert_many(projects)
+        try: collection.insert_many(projects)
         except Exception: pass
 
 def save_evaluated_project(project_data):
-    """Saves a single evaluated project with TOPSIS score and coordinates to MongoDB."""
     collection = get_collection()
-    if collection is None:
-        return
-        
-    # Try to add coordinates if missing (e.g., from UI input)
-    if "Latitude" not in project_data or "Longitude" not in project_data:
-        try:
-            from data_generator import get_lat_lon
-            lat, lon = get_lat_lon(project_data.get("Project Location", "Unknown"))
-            project_data["Latitude"] = lat
-            project_data["Longitude"] = lon
-        except Exception: pass
-        
-    try:
-        collection.insert_one(project_data)
+    if collection is None: return
+    try: collection.insert_one(project_data)
     except Exception: pass
 
 @st.cache_data(ttl=300)
 def get_similar_projects(project_type, location, limit=5):
-    """Fetches similar projects from MongoDB based on type and location."""
+    collection = get_collection()
+    if collection is None:
+        return [p for p in get_mock_projects(20) if p["Project Type"] == project_type][:limit]
     try:
-        collection = get_collection()
-        if collection is None: return []
-        
         query = {"Project Type": project_type, "Project Location": location}
-        cursor = collection.find(query, {"_id": 0}).sort("TOPSIS Score", -1).limit(limit)
-        return list(cursor)
-    except Exception:
-        return []
+        return list(collection.find(query, {"_id": 0}).sort("TOPSIS Score", -1).limit(limit))
+    except Exception: return []
 
 @st.cache_data(ttl=300)
 def get_top_projects(limit=10, search_query=None, project_type=None, classification=None):
-    """Fetches projects with advanced filtering and search."""
-    try:
-        collection = get_collection()
-        if collection is None: return []
+    collection = get_collection()
+    if collection is None:
+        data = get_mock_projects(50)
+        if search_query:
+            data = [p for p in data if search_query.lower() in p["Project Location"].lower() or search_query.lower() in p["Project Type"].lower()]
+        if project_type and project_type != "All":
+            data = [p for p in data if p["Project Type"] == project_type]
+        if classification and classification != "All":
+            data = [p for p in data if p["Classification"] == classification]
+        return data[:limit]
         
+    try:
         query = {"TOPSIS Score": {"$exists": True}}
         if search_query:
-            query["$or"] = [
-                {"Project Location": {"$regex": search_query, "$options": "i"}},
-                {"Project Type": {"$regex": search_query, "$options": "i"}}
-            ]
-        
-        if project_type and project_type != "All":
-            query["Project Type"] = project_type
-            
-        if classification and classification != "All":
-            query["Classification"] = classification
-
-        cursor = collection.find(query, {"_id": 0}).sort("TOPSIS Score", -1).limit(limit)
-        return list(cursor)
-    except Exception:
-        return []
+            query["$or"] = [{"Project Location": {"$regex": search_query, "$options": "i"}}, {"Project Type": {"$regex": search_query, "$options": "i"}}]
+        if project_type and project_type != "All": query["Project Type"] = project_type
+        if classification and classification != "All": query["Classification"] = classification
+        return list(collection.find(query, {"_id": 0}).sort("TOPSIS Score", -1).limit(limit))
+    except Exception: return []
 
 @st.cache_data(ttl=600)
 def get_sustainability_stats():
-    """Returns counts of projects by classification and total."""
+    collection = get_collection()
+    if collection is None:
+        data = get_mock_projects(50)
+        return {
+            "total": len(data),
+            "high": len([p for p in data if p["Classification"] == "High"]),
+            "medium": len([p for p in data if p["Classification"] == "Medium"]),
+            "low": len([p for p in data if p["Classification"] == "Low"])
+        }
     try:
-        collection = get_collection()
-        if collection is None:
-            return {"total": 0, "high": 0, "medium": 0, "low": 0}
-            
         return {
             "total": collection.count_documents({"TOPSIS Score": {"$exists": True}}),
             "high": collection.count_documents({"Classification": "High"}),
             "medium": collection.count_documents({"Classification": "Medium"}),
             "low": collection.count_documents({"Classification": "Low"})
         }
-    except Exception:
-        return {"total": 0, "high": 0, "medium": 0, "low": 0}
+    except Exception: return {"total": 0, "high": 0, "medium": 0, "low": 0}
 
 @st.cache_data(ttl=3600)
 def get_metadata():
-    """Returns unique project types and locations for filters."""
-    try:
-        collection = get_collection()
-        if collection is None:
-             return {"types": ["Residential", "Commercial", "Industrial", "Institutional", "Mixed-Use"]}
-        return {"types": collection.distinct("Project Type")}
-    except Exception:
+    collection = get_collection()
+    if collection is None:
         return {"types": ["Residential", "Commercial", "Industrial", "Institutional", "Mixed-Use"]}
+    try: return {"types": collection.distinct("Project Type")}
+    except Exception: return {"types": ["Residential", "Commercial", "Industrial", "Institutional", "Mixed-Use"]}
 
 @st.cache_data(ttl=60)
 def count_projects():
-    """Returns the total number of projects in the database."""
-    try:
-        collection = get_collection()
-        return collection.count_documents({}) if collection is not None else 0
-    except Exception:
-        return 0
+    collection = get_collection()
+    if collection is None: return 50
+    try: return collection.count_documents({})
+    except Exception: return 0
