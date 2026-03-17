@@ -2,15 +2,45 @@ import os
 from pymongo import MongoClient
 import streamlit as st
 
-# Use Streamlit secrets for deployment, fallback to environment variable or local MongoDB
-# Check multiple possible secret keys for flexibility
-MONGO_URI = st.secrets.get("MONGO_URI") or os.getenv("MONGO_URI")
+# Better secret handling for Streamlit Cloud
+def load_mongo_uri():
+    # 1. Try Streamlit Secrets (most common for Cloud)
+    try:
+        if "MONGO_URI" in st.secrets:
+            return st.secrets["MONGO_URI"]
+        # Also check for nested structure [connections.mongodb]
+        if "connections" in st.secrets and "mongodb" in st.secrets["connections"]:
+            return st.secrets["connections"]["mongodb"].get("uri") or st.secrets["connections"]["mongodb"].get("url")
+    except Exception:
+        pass
+        
+    # 2. Try Environment Variables
+    env_uri = os.getenv("MONGO_URI")
+    if env_uri:
+        return env_uri
+        
+    # 3. Fallback to localhost (Only safe for local dev)
+    return "mongodb://localhost:27017/"
 
-if not MONGO_URI:
-    MONGO_URI = "mongodb://localhost:27017/"
-    # If we are likely running on Cloud, warn the user
-    if os.environ.get("STREAMLIT_SERVER_PORT") or os.environ.get("DYNO"):
-        st.warning("⚠️ MONGO_URI secret missing. Defaulting to localhost (which usually fail in deployment). Please add MONGO_URI to your Streamlit Secrets.")
+MONGO_URI = load_mongo_uri()
+
+# Explicitly warn the user if we are on Cloud but using localhost
+if "localhost" in MONGO_URI:
+    # Most Streamlit Cloud environments set these
+    is_cloud = os.getenv("STREAMLIT_SERVER_GATHER_USAGE_STATS") == "true" or os.getenv("STREAMLIT_SHARING_MODE") == "on"
+    if is_cloud:
+        st.error("🛑 **CRITICAL: MONGO_URI Secret Missing!**")
+        st.markdown("""
+        Your app is trying to connect to `localhost`, but it's running on the Cloud. 
+        **To fix this:**
+        1. Go to your **Streamlit App Settings** -> **Secrets**.
+        2. Add your MongoDB Atlas connection string:
+           ```toml
+           MONGO_URI = "mongodb+srv://..."
+           ```
+        """)
+        st.stop()
+
 DB_NAME = "eco_build_ai"
 COLLECTION_NAME = "projects"
 
