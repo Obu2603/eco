@@ -52,7 +52,7 @@ def get_similar_projects(project_type, location, limit=5):
         cursor = collection.find(query, {"_id": 0}).sort("TOPSIS Score", -1).limit(limit)
         return list(cursor)
     except Exception as e:
-        print(f"Database connection error: {e}")
+        st.error(f"Database connection error: {e}")
         return []
 
 @st.cache_data(ttl=300)
@@ -77,7 +77,7 @@ def get_top_projects(limit=10, search_query=None, project_type=None, classificat
         cursor = collection.find(query, {"_id": 0}).sort("TOPSIS Score", -1).limit(limit)
         return list(cursor)
     except Exception as e:
-        print(f"Database connection error: {e}")
+        st.error(f"Database connection error: {e}")
         return []
 
 @st.cache_data(ttl=600)
@@ -97,7 +97,7 @@ def get_sustainability_stats():
             "low": low
         }
     except Exception as e:
-        print(f"Database connection error: {e}")
+        st.error(f"Database connection error: {e}")
         return {"total": 0, "high": 0, "medium": 0, "low": 0}
 
 @st.cache_data(ttl=3600)
@@ -108,7 +108,7 @@ def get_metadata():
         types = collection.distinct("Project Type")
         return {"types": types}
     except Exception as e:
-        print(f"Database connection error: {e}")
+        st.error(f"Database connection error: {e}")
         return {"types": ["Residential", "Commercial", "Industrial", "Institutional", "Mixed-Use"]}
 
 @st.cache_data(ttl=60)
