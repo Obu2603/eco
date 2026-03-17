@@ -81,7 +81,7 @@ with tab1:
                 "Average %": [40, 60, 50, 45, 75, 55, 80, 40, 65]
             })
             fig_demo = px.bar(df_demo, x="Criteria", y="Average %", title="Global Construction Averages (Benchmark)", color="Average %", color_continuous_scale="Greens")
-            st.plotly_chart(fig_demo, use_container_width=True)
+            st.plotly_chart(fig_demo, width="stretch")
             
         except Exception:
             st.warning("Connect to the database to view live platform statistics.")
@@ -205,7 +205,7 @@ with tab1:
             
             fig_radar = go.Figure(data=go.Scatterpolar(r=values_radar, theta=categories, fill='toself', marker_color='#10b981'))
             fig_radar.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])), title="Criteria Performance Radar", showlegend=False)
-            st.plotly_chart(fig_radar, use_container_width=True)
+            st.plotly_chart(fig_radar, width="stretch")
 
         with v_col2:
             # Improvement Graph
@@ -213,7 +213,7 @@ with tab1:
             fig_imp = px.bar(sim_df, x="Stage", y="Score", text_auto='.3f', color="Stage", color_discrete_sequence=['#94a3b8', '#10b981'])
             fig_imp.update_yaxes(range=[0, 1])
             fig_imp.update_layout(title="Sustainability Improvement Comparison", showlegend=False)
-            st.plotly_chart(fig_imp, use_container_width=True)
+            st.plotly_chart(fig_imp, width="stretch")
 
         # --- Report Generation ---
         st.markdown("---")
@@ -361,7 +361,7 @@ with tab2:
 
             st.dataframe(
                 style_leaderboard(display_df.style),
-                use_container_width=True,
+                width="stretch",
                 hide_index=True,
                 column_config={
                     "Rank": st.column_config.TextColumn("Rank", width="small"),
@@ -398,7 +398,7 @@ with tab2:
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)'
                 )
-                st.plotly_chart(fig_map, use_container_width=True)
+                st.plotly_chart(fig_map, width="stretch")
             else:
                 # Fallback Visualization: Top Sustainable Cities Horizontal Bar Chart
                 # Group by location and get average score
@@ -452,7 +452,7 @@ with tab2:
                 fig_fallback.update_xaxes(showgrid=True, gridcolor='rgba(255,255,255,0.1)')
                 fig_fallback.update_yaxes(showgrid=False)
                 
-                st.plotly_chart(fig_fallback, use_container_width=True)
+                st.plotly_chart(fig_fallback, width="stretch")
 
         else:
             st.info("No projects found matching your criteria.")

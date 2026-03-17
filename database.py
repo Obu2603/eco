@@ -3,10 +3,14 @@ from pymongo import MongoClient
 import streamlit as st
 
 # Use Streamlit secrets for deployment, fallback to environment variable or local MongoDB
-if "MONGO_URI" in st.secrets:
-    MONGO_URI = st.secrets["MONGO_URI"]
-else:
-    MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+# Check multiple possible secret keys for flexibility
+MONGO_URI = st.secrets.get("MONGO_URI") or os.getenv("MONGO_URI")
+
+if not MONGO_URI:
+    MONGO_URI = "mongodb://localhost:27017/"
+    # If we are likely running on Cloud, warn the user
+    if os.environ.get("STREAMLIT_SERVER_PORT") or os.environ.get("DYNO"):
+        st.warning("⚠️ MONGO_URI secret missing. Defaulting to localhost (which usually fail in deployment). Please add MONGO_URI to your Streamlit Secrets.")
 DB_NAME = "eco_build_ai"
 COLLECTION_NAME = "projects"
 
