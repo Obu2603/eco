@@ -1,0 +1,14 @@
+frontend/
+node_modules/
+legacy_streamlit/
+.git/
+__pycache__*
+*.pdf
+*.zip
+*.mp4
+*.jpeg
+*.png
+*.exe
+*.lnk
+api/__pycache__
+backend/app/__pycache__

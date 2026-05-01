@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
 
 # 9 Sustainability Criteria
 CRITERIA = [
@@ -38,14 +37,16 @@ def apply_topsis(data_df):
     if len(matrix) == 0:
         return df
 
-    # 1. Normalize data using MinMax Scaling
-    scaler = MinMaxScaler()
+    # 1. Normalize data using manual MinMax Scaling to save bundle size
     try:
-        norm_matrix = scaler.fit_transform(matrix)
-    except ValueError:
+        col_min = matrix.min(axis=0)
+        col_max = matrix.max(axis=0)
+        # Avoid division by zero
+        range_val = col_max - col_min
+        range_val[range_val == 0] = 1e-10
+        norm_matrix = (matrix - col_min) / range_val
+    except Exception:
         norm_matrix = matrix
-
-    # 2. Weighted normalized matrix
     weight_array = np.array(WEIGHTS)
     weighted_matrix = norm_matrix * weight_array
 
