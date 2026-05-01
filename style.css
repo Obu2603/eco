@@ -1,0 +1,273 @@
+/* Modern Sleek Eco-Themed CSS - Responsive to Light & Dark Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+html,
+body,
+[class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Hide Streamlit Header, Toolbar, and Footer */
+header[data-testid="stHeader"] {
+    display: none !important;
+}
+
+.stDeployButton {
+    display: none !important;
+}
+
+[data-testid="stToolbar"] {
+    display: none !important;
+}
+
+footer {
+    display: none !important;
+}
+
+.main .block-container {
+    padding-top: 2rem;
+    max-width: 1200px;
+}
+
+/* Rounded Cards using native Streamlit CSS variables */
+div.stMetric,
+div[data-testid="metric-container"] {
+    background: var(--secondary-background-color);
+    padding: 1.5rem !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    transition: transform 0.2s ease;
+}
+
+div.stMetric:hover {
+    transform: translateY(-4px);
+}
+
+/* Alert Boxes */
+.danger-alert,
+.warning-alert,
+.success-alert {
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    border-left: 5px solid;
+}
+
+.danger-alert {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+.warning-alert {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border-color: #f59e0b;
+}
+
+.success-alert {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-color: #10b981;
+}
+
+/* Sidebar Styling using native CSS vars */
+section[data-testid="stSidebar"] {
+    background-color: var(--secondary-background-color);
+}
+
+section[data-testid="stSidebar"] .stMarkdown h2,
+section[data-testid="stSidebar"] .stMarkdown h1,
+section[data-testid="stSidebar"] label {
+    color: var(--text-color) !important;
+}
+
+/* Headers */
+h1,
+h2,
+h3 {
+    color: #10b981 !important;
+    font-weight: 700 !important;
+}
+
+/* Buttons */
+.stButton>button {
+    width: 100%;
+    border-radius: 10px;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.stButton>button:hover {
+    background-color: #059669;
+    color: white;
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+}
+
+/* Input fields and select boxes */
+.stTextInput>div>div>input,
+.stSelectbox>div>div>div,
+.stNumberInput>div>div>input {
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.stTextInput>div>div>input:focus,
+.stSelectbox>div>div>div:focus,
+.stNumberInput>div>div>input:focus {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+/* Score Animation Container */
+.score-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: conic-gradient(#10b981 var(--percentage), transparent 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    animation: rotateScale 1.5s ease-out;
+}
+
+.score-circle::after {
+    content: attr(data-score);
+    width: 120px;
+    height: 120px;
+    background: var(--background-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-color);
+}
+
+@keyframes rotateScale {
+    0% {
+        transform: scale(0.5) rotate(-180deg);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+/* Dashboard Card Styles */
+.kpi-card {
+    background: var(--secondary-background-color);
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+    border-top: 4px solid #10b981;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+}
+
+.kpi-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+    background: linear-gradient(45deg, #10b981, #34d399);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.kpi-label {
+    color: var(--text-color);
+    opacity: 0.8;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Custom Progress Bar for Leaderboard */
+.score-progress-container {
+    width: 100%;
+    background-color: var(--secondary-background-color);
+    border-radius: 5px;
+    height: 12px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--secondary-background-color);
+}
+
+.score-progress-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 1s ease-in-out;
+}
+
+.bg-high { background-color: #10b981; }
+.bg-medium { background-color: #f59e0b; }
+.bg-low { background-color: #ef4444; }
+
+/* Leaderboard Medal Highlighting */
+.rank-medal {
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+/* Smooth animations for cards */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Sidebar Branding Enhancements */
+.sidebar-logo {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: rgba(16, 185, 129, 0.1);
+    border-radius: 12px;
+}
+
+/* Responsive Table Adjustments */
+[data-testid="stDataFrame"] {
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--background-color);
+}
+
+div[data-testid="stMetricValue"] {
+    background-color: rgba(16, 185, 129, 0.1);
+    border-left: 4px solid #10b981;
+    padding: 1rem;
+    border-radius: 4px;
+    color: #10b981 !important;
+    margin-bottom: 1rem;
+}
