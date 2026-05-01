@@ -16,11 +16,19 @@
     "routes": [
         {
             "src": "/api/(.*)",
-            "dest": "api/index.py"
+            "dest": "/api/index.py"
+        },
+        {
+            "handle": "filesystem"
         },
         {
             "src": "/(.*)",
-            "dest": "frontend/$1"
+            "dest": "/frontend/$1"
+        },
+        {
+            "src": "/(.*)",
+            "status": 404,
+            "dest": "/frontend/index.html"
         }
     ]
 }
